@@ -1,0 +1,103 @@
+{
+  // =========================================================================
+  // TABLA 1: Products
+  // Primary Key (PK): ProductID (String)
+  // Descripción: Catálogo con esquema flexible para atributos dinámicos por categoría.
+  // =========================================================================
+  "Products": [
+    {
+      "ProductID": "PROD-1001",           // Partition Key
+      "SellerID": "SELL-501",             // ID del vendedor (Referencia a tabla 'sellers' en RDS)
+      "Name": "MacBook Pro 16 M3 Max",    // Nombre del producto
+      "CategoryID": "CAT-TECH-01",        // ID de categoría (Referencia a la tabla 'Categories')
+      "Price": 3499.99,                   // Precio público en lista
+      "Status": "ACTIVE",                 // Estado del producto ('ACTIVE', 'INACTIVE', 'OUT_OF_STOCK')
+      "Tags": ["Apple", "Laptop", "Pro", "M3"], // Array de etiquetas para búsqueda rápida
+      "Attributes": {                     // Mapa NoSQL de especificaciones técnicas dinámicas
+        "RAM": "36GB",
+        "Storage": "1TB SSD",
+        "Color": "Space Black",
+        "ScreenSize": "16.2 inches"
+      },
+      "CreatedAt": "2026-01-15T10:00:00Z" // Fecha de creación ISO 8601
+    },
+    {
+      "ProductID": "PROD-2002",
+      "SellerID": "SELL-302",
+      "Name": "Playera Algodón Estampada",
+      "CategoryID": "CAT-CLOTH-05",
+      "Price": 25.00,
+      "Status": "ACTIVE",
+      "Tags": ["Moda", "Ropa", "Algodon", "Verano"],
+      "Attributes": {                     // Atributos completamente diferentes a la laptop
+        "SizeOptions": ["S", "M", "L", "XL"],
+        "Color": "Negro",
+        "Material": "100% Algodón Orgánico",
+        "Gender": "Unisex"
+      },
+      "CreatedAt": "2026-02-01T14:30:00Z"
+    }
+  ],
+
+  // =========================================================================
+  // TABLA 2: Categories
+  // Primary Key (PK): CategoryID (String)
+  // Descripción: Árbol de navegación y jerarquía del catálogo.
+  // =========================================================================
+  "Categories": [
+    {
+      "CategoryID": "CAT-TECH-01",        // Partition Key
+      "Name": "Laptops y Computadoras",   // Nombre visible de la categoría
+      "Slug": "laptops-y-computadoras",   // Identificador amigable para URL
+      "ParentCategoryID": "CAT-TECH-MAIN",// Categoría padre para estructurar el árbol
+      "Description": "Laptops de trabajo, gaming y uso personal.",
+      "IsActive": true
+    },
+    {
+      "CategoryID": "CAT-CLOTH-05",
+      "Name": "Ropa Casual",
+      "Slug": "ropa-casual",
+      "ParentCategoryID": "CAT-CLOTH-MAIN",
+      "Description": "Playeras, pantalones y accesorios diarios.",
+      "IsActive": true
+    }
+  ],
+
+  // =========================================================================
+  // TABLA 3: Tags
+  // Primary Key (PK): TagID (String)
+  // Descripción: Diccionario centralizado de etiquetas e índice de búsqueda.
+  // =========================================================================
+  "Tags": [
+    {
+      "TagID": "TAG-APPLE",               // Partition Key
+      "Name": "Apple",                    // Nombre del tag
+      "Slug": "apple",                    // Identificador de URL
+      "UsageCount": 1520                  // Métricas/Tendencias para el motor de búsqueda
+    },
+    {
+      "TagID": "TAG-GAMING",
+      "Name": "Gaming",
+      "Slug": "gaming",
+      "UsageCount": 3400
+    }
+  ],
+
+  // =========================================================================
+  // TABLA 4: UserSessions
+  // Primary Key (PK): SessionID (String)
+  // Configuración AWS: Activar TTL (Time to Live) en el campo 'ExpiresAt'.
+  // =========================================================================
+  "UserSessions": [
+    {
+      "SessionID": "SESS-xyz-987654321",  // Partition Key
+      "UserID": "10045",                  // ID del usuario autenticado (Referencia a 'users' en RDS)
+      "AuthToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", // Token JWT de sesión
+      "IPAddress": "189.200.10.15",       // IP desde donde se inició sesión
+      "DeviceInfo": "Chrome 120.0 / macOS", // Datos del dispositivo cliente
+      "CreatedAt": "2026-09-23T10:00:00Z", // Fecha de emisión
+      "ExpiresAt": 1790251595             // Unix Epoch Timestamp (Segundos).
+                                          // AWS eliminará este registro automáticamente al expirar.
+    }
+  ]
+}
